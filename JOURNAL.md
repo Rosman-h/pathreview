@@ -24,3 +24,41 @@ matching the existing test `test_none_context_chunk_text` in
 **Setup confirmation:** [x] App runs locally at localhost:5173
 
 **Cohort ledger:** [ ] Issue added to cohort ledger
+
+### Reproduction — Issue #153
+
+**Observed:** `faithfulness_checker.py` raises a `TypeError` when a claim
+verification result contains `None` values in fields normally accessed via
+`dict.get(...)`. `.get()` returns `None` when a key is missing or explicitly
+set to `None` — the code downstream assumed a string/number and called
+methods on it (e.g. string formatting, arithmetic, comparisons) without a
+None-check, so the crash surfaces whenever the LLM response or upstream
+data omits a field the checker expects.
+
+**Steps to reproduce:**
+
+1. Ran the faithfulness evaluator on a sample with a claim whose scoring
+   result had one or more fields missing/None.
+2. Confirmed the `TypeError` traceback pointed to the `.get()` call site in
+   `rag/evaluator/faithfulness_checker.py`.
+3. Verified the crash is deterministic given that input — not intermittent.
+
+## Week 8 — Reproduction & solution planning
+
+**Reproduction commit link:** [link to your commit — add the actual URL]
+
+**Reproduction summary:**
+Reproduced the TypeError in `rag/evaluator/faithfulness_checker.py` by running
+the checker on a claim result with None/missing fields; confirmed `.get()`
+returns None and downstream code doesn't guard against it before use.
+
+**PLAN.md link:** [link to PLAN.md on your branch]
+
+**Walkthrough video (recommended):** [optional]
+
+**Blockers or open questions:**
+Fix for this issue was already implemented on `fix/153-faithfulness-checker-none-crash`
+during Week 7 work; documenting reproduction/plan here reflects that process
+retroactively. Open question: whether the correct fallback behavior (skip vs.
+0-score vs. typed error) matches what other callers expect — worth confirming
+with maintainer feedback on the PR.
