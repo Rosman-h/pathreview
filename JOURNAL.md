@@ -62,3 +62,22 @@ during Week 7 work; documenting reproduction/plan here reflects that process
 retroactively. Open question: whether the correct fallback behavior (skip vs.
 0-score vs. typed error) matches what other callers expect — worth confirming
 with maintainer feedback on the PR.
+
+## Week 9 — Mid-week progress
+
+**Status:** Core fix for #153 implemented and tested. Added `_safe_chunk_text`
+helper to `FaithfulnessChecker` to guard against three failure modes:
+non-dict chunks, None text values, and non-string text values (e.g. int).
+7 new regression tests added and passing.
+
+**Pre-existing issue found (out of scope):** While testing, found that
+`_is_supported()` has a stricter overlap threshold than 3 existing tests
+assume — `test_partial_support_returns_middle_score`,
+`test_multiple_context_chunks`, and `test_multiple_claims_varying_support`
+fail even on the original, unmodified code (confirmed via `git stash`).
+This appears unrelated to #153 and is not something I'm fixing in this PR
+to keep scope contained. Flagging here and will mention in the PR
+description in case a maintainer wants a separate issue filed.
+
+**Remaining for this week:** Final documentation pass, full test suite run,
+and PR submission.

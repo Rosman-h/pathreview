@@ -34,8 +34,8 @@ class FaithfulnessChecker:
             logger.info("faithfulness_no_claims_extracted")
             return 0.5  # Default to neutral if no extractable claims
 
-        # Concatenate context text
-        context_text = " ".join([(chunk.get("text") or "") for chunk in context_chunks])
+        # Concatenate context text, guarding against malformed chunks
+        context_text = " ".join(self._safe_chunk_text(chunk) for chunk in context_chunks)
 
         # Check each claim for support
         supported = 0
@@ -50,6 +50,38 @@ class FaithfulnessChecker:
         )
 
         return score
+
+    @staticmethod
+    def _safe_chunk_text(chunk: object) -> str:
+        """Safely extract text from a context chunk, tolerating malformed input.
+
+        Handles three failure modes seen in issue #153: chunks that aren't
+        dicts, missing/None "text" fields, and "text" fields of an
+        unexpected type (e.g. an int).
+
+        Args:
+            chunk: A context chunk, expected to be a dict with a "text" key
+
+        Returns:
+            The chunk's text as a string, or "" if it can't be extracted
+        """
+        if not isinstance(chunk, dict):
+            logger.warning("faithfulness_invalid_chunk_type", chunk_type=type(chunk).__name__)
+            return ""
+
+        text = chunk.get("text")
+
+        if text is None:
+            return ""
+
+        if not isinstance(text, str):
+            logger.warning(
+                "faithfulness_invalid_text_type",
+                text_type=type(text).__name__,
+            )
+            return ""
+
+        return text
 
     @staticmethod
     def _extract_claims(text: str) -> list[str]:
