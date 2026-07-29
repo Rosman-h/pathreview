@@ -81,3 +81,28 @@ description in case a maintainer wants a separate issue filed.
 
 **Remaining for this week:** Final documentation pass, full test suite run,
 and PR submission.
+
+## Week 9 — Submission
+
+**PR link:** [[paste your actual PR URL once opened](https://github.com/ascherj/pathreview/pull/369)]
+
+**Summary:** Implemented `_safe_chunk_text()` in `FaithfulnessChecker` to
+guard against non-dict chunks, None text, and non-string text — closing
+the remaining gaps from the original #153 crash. Added 7 regression tests
+covering these cases, all passing.
+
+**Verification:** Ran the full test suite before and after this change
+(via checkout of the prior commit) — confirmed identical 52 pre-existing
+failures unrelated to this work in both cases, and this PR adds 7 new
+passing tests with no regressions.
+
+**Known out-of-scope issues found and documented (not fixed):**
+
+- 3 pre-existing test failures in this file caused by `_is_supported()`'s
+  overlap threshold, unrelated to #153
+- Pre-existing missing type annotations / unused variable in this test
+  file, flagged to reviewers rather than silently fixed
+
+**Reflection:** The core fix was small, but confirming scope (what's mine
+to fix vs. pre-existing) took the most time this week. Worth it — avoided
+scope creep into unrelated code.
