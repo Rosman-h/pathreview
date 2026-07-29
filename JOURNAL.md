@@ -45,14 +45,14 @@ data omits a field the checker expects.
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** [link to your commit — add the actual URL]
+**Reproduction commit link:** [[link to your commit — add the actual URL](https://github.com/Rosman-h/pathreview/commit/c30955a77934d6453d7926a929c9b506a8131d5a)]
 
 **Reproduction summary:**
 Reproduced the TypeError in `rag/evaluator/faithfulness_checker.py` by running
 the checker on a claim result with None/missing fields; confirmed `.get()`
 returns None and downstream code doesn't guard against it before use.
 
-**PLAN.md link:** [link to PLAN.md on your branch]
+**PLAN.md link:** [[link to PLAN.md on your branch](https://github.com/Rosman-h/pathreview/blob/fix/153-faithfulness-checker-none-crash/PLAN.md)]
 
 **Walkthrough video (recommended):** [optional]
 
