@@ -106,3 +106,33 @@ passing tests with no regressions.
 **Reflection:** The core fix was small, but confirming scope (what's mine
 to fix vs. pre-existing) took the most time this week. Worth it — avoided
 scope creep into unrelated code.
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:**
+No reviewer or maintainer comments came in on PR #369 by the end of the week. Per the Su26 course note, reviewer feedback isn't a feature this term, so this is expected rather than a sign the PR was ignored.
+
+**How you responded:**
+N/A — no feedback to respond to. I re-read my own PR description and diff one more time as a stand-in for review, and confirmed the regression tests still pass against the current state of the branch before final submission.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+Getting the local dev environment running was harder than the actual fix. I lost most of Week 7 to Windows-specific friction — Git Bash vs. PowerShell syntax differences, installing GNU Make through winget, getting WSL2 and Docker Desktop to actually put things on PATH. The `None`-crash bug itself in `faithfulness_checker.py` was a small, well-scoped fix once I could run the test suite locally. The ratio of environment setup time to code-change time was lopsided in a way I didn't expect going in — I assumed most of the week would go to understanding the RAG evaluator logic, not to getting `make test` to execute at all.
+
+**What did you learn about working in a large codebase?**
+The fix itself was maybe 15 lines, but making it production-quality meant thinking about every caller of the function, not just the one that happened to crash. Adding `_safe_chunk_text()` and handling non-string `text` values and non-dict chunk entries came from tracing how the function was actually called elsewhere in the codebase, not from the original issue description. In my own projects I fix the case in front of me. Here I had to assume inputs I hadn't seen yet would eventually hit this code path, because I wasn't the only one calling it and I couldn't predict every caller. I also learned to respect pre-existing test/lint debt as out of scope — `git stash`-ing to confirm failures predated my branch, documenting them, and moving on rather than trying to fix everything I touched.
+
+**How did AI tools help — and where did they fall short?**
+AI assistance was most useful for the mechanical layers: diagnosing PowerShell/Git Bash syntax mismatches fast, writing regression tests that matched the project's existing test conventions once I pointed to examples, and drafting PLAN.md and JOURNAL.md structure so I could focus on content instead of format. It fell short on judgment calls specific to this codebase — deciding what counted as in-scope for issue #153 versus scope creep, and deciding how defensive `_safe_chunk_text()` needed to be without over-engineering it. Those decisions needed me to actually read the surrounding code and reason about the project's conventions, not just pattern-match to "how would I fix this in isolation."
+
+**What would you do differently if you started over?**
+I'd spend less time retroactively reconstructing Week 8's PLAN.md and reproduction docs after the fact, and instead write them concurrently with the fix in Week 7. Writing documentation after the code is already working meant reconstructing my own reasoning from memory instead of capturing it live, which made the PLAN.md feel more like an artifact than a real plan. I'd also budget explicit time for environment setup up front instead of treating it as an unplanned detour — on Windows it's predictable enough at this point that it deserves its own line item.
+
+**What are you most proud of from this module?**
+Diagnosing that the pre-existing test and lint failures were out of scope rather than something I broke. It would have been easy to either ignore them or spend the rest of the module trying to fix unrelated debt. Using `git stash` to isolate my changes and confirm the failures existed on the base branch, then documenting that clearly instead of silently working around it, is the part of this module that felt most like actual engineering judgment rather than following a checklist.
